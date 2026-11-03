@@ -29,7 +29,7 @@ public class User {
     private String phone;
 
     @Column(length = 100)
-//    private String company;
+    private String company;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
