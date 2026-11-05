@@ -18,7 +18,7 @@
     <description>Enterprise Visitor Management System with RBAC, OTP Mail Verification, DigiLocker KYC, and QR Code Check-in</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <jjwt.version>0.12.6</jjwt.version>
         <zxing.version>3.5.3</zxing.version>
     </properties>
@@ -98,6 +98,7 @@
             <artifactId>javase</artifactId>
             <version>${zxing.version}</version>
         </dependency>
+
 
         <!-- Testing -->
         <dependency>

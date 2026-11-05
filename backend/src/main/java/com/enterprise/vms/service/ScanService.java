@@ -91,7 +91,7 @@ public class ScanService {
             auditLogService.log("SCAN_CHECK_OUT", scannedBy,
                     "Checked out visitor pass: " + passCode + " at " + now, null);
         } else {
-            // Check-in workflow (for PENDING_APPROVAL or APPROVED)
+           
             CheckInRecord checkInRecord = new CheckInRecord(
                     pass,
                     now,
