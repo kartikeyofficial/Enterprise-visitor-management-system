@@ -65,10 +65,6 @@ import { HostDto, VisitorPassDto } from '../../models/models';
           <i [class]="isError ? 'ri-error-warning-line' : 'ri-checkbox-circle-line'"></i>
           <div class="alert-content">
             <p>{{ statusMessage }}</p>
-            <div *ngIf="devOtpHelper" class="dev-otp-helper">
-              <strong>Evaluation Hint:</strong> One-Time Password sent to your email is 
-              <span class="otp-pill" (click)="fillOtp(devOtpHelper)">{{ devOtpHelper }} (Click to auto-fill)</span>
-            </div>
           </div>
         </div>
 
@@ -128,7 +124,7 @@ import { HostDto, VisitorPassDto } from '../../models/models';
                 type="text"
                 maxlength="6"
                 [(ngModel)]="otpCode"
-                placeholder="123456"
+                placeholder="Enter Code"
                 class="form-input otp-input-field"
                 [disabled]="loading"
               />
@@ -421,7 +417,7 @@ import { HostDto, VisitorPassDto } from '../../models/models';
               <button class="btn btn-secondary" (click)="printBadge()">
                 <i class="ri-printer-line"></i> Print Badge
               </button>
-              <button class="btn btn-primary" (click)="goToAdminScanner()">
+              <button *ngIf="authService.isAdmin()" class="btn btn-primary" (click)="goToAdminScanner()">
                 <i class="ri-qr-scan-2-line"></i> Open Reception Scanner to Check In
               </button>
             </div>
@@ -884,7 +880,7 @@ export class RegisterComponent implements OnInit {
   generatedPass: VisitorPassDto | null = null;
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private visitorService: VisitorService,
     private router: Router
   ) {}

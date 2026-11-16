@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,7 @@ import { RouterModule } from '@angular/router';
           </h1>
 
           <p class="hero-subtitle">
-            Engineered with Java Spring Boot, MySQL, and Angular. Features real-time visitor registration, 
+            Engineered with Features real-time visitor registration, 
             OTP mail verification, DigiLocker Aadhaar e-KYC, host authorization, and instant QR scan check-in.
           </p>
 
@@ -31,7 +32,7 @@ import { RouterModule } from '@angular/router';
               <i class="ri-user-add-line"></i>
               <span>Register for Visitor Pass</span>
             </a>
-            <a routerLink="/admin" class="btn btn-secondary btn-lg">
+            <a *ngIf="authService.isAdmin()" routerLink="/admin" class="btn btn-secondary btn-lg">
               <i class="ri-qr-scan-2-line"></i>
               <span>Launch Reception Scanner</span>
             </a>
@@ -259,4 +260,6 @@ import { RouterModule } from '@angular/router';
     }
   `]
 })
-export class HomeComponent {}
+export class HomeComponent {
+  constructor(public authService: AuthService) {}
+}

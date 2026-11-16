@@ -249,7 +249,7 @@ declare var Html5Qrcode: any;
         <div *ngIf="activeTab === 'history'" class="card-modern fade-in">
           <div class="table-header">
             <div>
-              <h3>Check-In Scan History (MySQL Database)</h3>
+              <h3>Check-In Scan History</h3>
               <p class="text-secondary">Real-time scan logs with date, time, admin operator, and terminal gate.</p>
             </div>
             <button class="btn btn-secondary btn-sm" (click)="loadCheckInHistory()">

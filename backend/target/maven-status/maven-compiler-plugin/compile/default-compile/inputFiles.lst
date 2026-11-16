@@ -2,6 +2,7 @@
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/config/DataInitializer.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/config/DataSourceConfig.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/config/GlobalExceptionHandler.java
+/home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/config/JacksonConfig.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/config/SecurityConfig.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/controller/AdminController.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/controller/AuthController.java

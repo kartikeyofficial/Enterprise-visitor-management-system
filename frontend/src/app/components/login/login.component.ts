@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
             <i class="ri-shield-keyhole-fill"></i>
           </div>
           <h2>System Sign In</h2>
-          <p class="text-secondary">Enter credentials to access Admin Reception, Host approvals, or Visitor records.</p>
+          <p class="text-secondary">Enter credentials to access Admin Reception or Visitor records.</p>
         </div>
 
         <div *ngIf="errorMessage" class="alert-box alert-error">
@@ -68,27 +68,6 @@ import { AuthService } from '../../services/auth.service';
             <span *ngIf="loading">Authenticating...</span>
           </button>
         </form>
-
-        <!-- Quick Access Pre-Fill for Admin specified in prompt -->
-        <div class="quick-credentials-box">
-          <span class="box-title">System Role Credentials:</span>
-          
-          <div class="cred-item" (click)="fillAdmin()">
-            <div class="cred-info">
-              <strong>Admin: rajputkartikey10&#64;gmail.com</strong>
-              <small>Reception gate scanner, check-in history, audit logs</small>
-            </div>
-            <span class="btn-fill">Click to Use</span>
-          </div>
-
-          <div class="cred-item" (click)="fillHost()">
-            <div class="cred-info">
-              <strong>Host: vikram.sarabhai&#64;enterprise.com</strong>
-              <small>Host employee approval portal</small>
-            </div>
-            <span class="btn-fill">Click to Use</span>
-          </div>
-        </div>
 
         <div class="login-footer text-center">
           <span>New visitor?</span>
@@ -228,16 +207,6 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  fillAdmin() {
-    this.email = 'rajputkartikey10@gmail.com';
-    this.password = 'Admin@12345';
-  }
-
-  fillHost() {
-    this.email = 'vikram.sarabhai@enterprise.com';
-    this.password = 'Host@12345';
-  }
-
   onLogin() {
     this.loading = true;
     this.errorMessage = '';
@@ -245,10 +214,8 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: res => {
         this.loading = false;
-        if (res.data?.role === 'ROLE_ADMIN') {
+        if (res.data?.role === 'ROLE_ADMIN' || res.data?.role === 'ROLE_HOST') {
           this.router.navigate(['/admin']);
-        } else if (res.data?.role === 'ROLE_HOST') {
-          this.router.navigate(['/host']);
         } else {
           this.router.navigate(['/register']);
         }

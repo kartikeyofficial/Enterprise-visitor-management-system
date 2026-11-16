@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { VisitorService } from '../../services/visitor.service';
+import { AuthService } from '../../services/auth.service';
 import { VisitorPassDto } from '../../models/models';
 
 @Component({
@@ -69,7 +70,7 @@ import { VisitorPassDto } from '../../models/models';
           <button class="btn btn-primary" (click)="printBadge()">
             <i class="ri-printer-line"></i> Print Visitor Badge
           </button>
-          <a [routerLink]="['/admin']" [queryParams]="{autoScan: pass.passCode}" class="btn btn-secondary">
+          <a *ngIf="authService.isAdmin()" [routerLink]="['/admin']" [queryParams]="{autoScan: pass.passCode}" class="btn btn-secondary">
             <i class="ri-qr-scan-2-line"></i> Test Scan in Reception Desk
           </a>
         </div>
@@ -218,7 +219,11 @@ export class BadgeViewComponent implements OnInit {
   pass: VisitorPassDto | null = null;
   loading = true;
 
-  constructor(private route: ActivatedRoute, private visitorService: VisitorService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private visitorService: VisitorService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {

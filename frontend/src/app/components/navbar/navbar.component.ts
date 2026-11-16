@@ -31,13 +31,9 @@ import { AuthService } from '../../services/auth.service';
             <i class="ri-user-add-line"></i>
             <span>Visitor Check-In</span>
           </a>
-          <a routerLink="/admin" routerLinkActive="active" class="nav-link">
+          <a *ngIf="authService.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-link">
             <i class="ri-qr-scan-2-line"></i>
             <span>Reception Scanner</span>
-          </a>
-          <a routerLink="/host" routerLinkActive="active" class="nav-link">
-            <i class="ri-shield-user-line"></i>
-            <span>Host Approvals</span>
           </a>
         </nav>
 
