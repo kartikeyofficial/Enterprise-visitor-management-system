@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
-import { AuditLog, CheckInRecord, DashboardStats, ScanResultResponse, VisitorPassDto } from '../../models/models';
+import { AuditLog, CheckInRecord, DashboardStats, HostDto, HostRequest, ScanResultResponse, VisitorPassDto } from '../../models/models';
 import confetti from 'canvas-confetti';
 
 declare var Html5Qrcode: any;
@@ -98,6 +98,9 @@ declare var Html5Qrcode: any;
           </button>
           <button class="tab-btn" [class.active]="activeTab === 'audit'" (click)="loadAuditLogs(); activeTab = 'audit'">
             <i class="ri-shield-line"></i> Security Audit Logs
+          </button>
+          <button class="tab-btn" [class.active]="activeTab === 'hosts'" (click)="loadHosts(); activeTab = 'hosts'">
+            <i class="ri-user-settings-line"></i> Enterprise Hosts
           </button>
         </div>
 
@@ -412,6 +415,144 @@ declare var Html5Qrcode: any;
                   <td><span class="audit-action-chip">{{ log.action }}</span></td>
                   <td class="font-bold">{{ log.performedBy }}</td>
                   <td>{{ log.details }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB 5: ENTERPRISE HOSTS MANAGEMENT -->
+        <!-- ============================================================== -->
+        <div *ngIf="activeTab === 'hosts'" class="card-modern fade-in">
+          <div class="table-header">
+            <div>
+              <h3>Enterprise Hosts Directory</h3>
+              <p class="text-secondary">Add, update, or remove enterprise hosts available for visitor appointments.</p>
+            </div>
+            <div class="header-action-group">
+              <button class="btn btn-secondary btn-sm" (click)="loadHosts()">
+                <i class="ri-refresh-line"></i> Refresh
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="openAddHostModal()">
+                <i class="ri-user-add-line"></i> Add New Host
+              </button>
+            </div>
+          </div>
+
+          <!-- Notification inside Hosts tab if any -->
+          <div *ngIf="hostMessage" class="alert-box" [ngClass]="hostIsError ? 'alert-error' : 'alert-success'" style="margin-bottom: 20px;">
+            <i [class]="hostIsError ? 'ri-error-warning-line' : 'ri-checkbox-circle-line'"></i>
+            <div class="alert-content">
+              <p>{{ hostMessage }}</p>
+            </div>
+          </div>
+
+          <!-- HOST MODAL / FORM (Shown when editing or adding) -->
+          <div *ngIf="showHostModal" class="host-modal-overlay">
+            <div class="host-modal-card card-modern fade-in">
+              <div class="modal-head">
+                <h3>{{ isEditingHost ? 'Update Enterprise Host' : 'Add New Enterprise Host' }}</h3>
+                <button class="btn-close" (click)="cancelHostModal()"><i class="ri-close-line"></i></button>
+              </div>
+
+              <div class="form-grid-modal">
+                <div class="form-group">
+                  <label class="form-label">First Name *</label>
+                  <input type="text" [(ngModel)]="hostForm.firstName" class="form-input" placeholder="e.g. Vikram" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" [(ngModel)]="hostForm.lastName" class="form-input" placeholder="e.g. Sarabhai" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Official Email *</label>
+                  <input type="email" [(ngModel)]="hostForm.email" class="form-input" placeholder="e.g. vikram.sarabhai@enterprise.com" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone Number</label>
+                  <input type="text" [(ngModel)]="hostForm.phone" class="form-input" placeholder="e.g. +91 9811122233" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Employee Code *</label>
+                  <input type="text" [(ngModel)]="hostForm.employeeCode" class="form-input" placeholder="e.g. EMP-105" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Department *</label>
+                  <input type="text" [(ngModel)]="hostForm.department" class="form-input" placeholder="e.g. Engineering & R&D" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Designation *</label>
+                  <input type="text" [(ngModel)]="hostForm.designation" class="form-input" placeholder="e.g. VP of Artificial Intelligence" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Cabin / Office Location</label>
+                  <input type="text" [(ngModel)]="hostForm.cabinNumber" class="form-input" placeholder="e.g. Tower C - 501" />
+                </div>
+                <div class="form-group full-width">
+                  <label class="checkbox-container">
+                    <input type="checkbox" [(ngModel)]="hostForm.available" />
+                    <span class="checkbox-label">Available for Visitor Check-In Selection</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" (click)="cancelHostModal()">Cancel</button>
+                <button class="btn btn-primary btn-sm" [disabled]="savingHost || !hostForm.firstName || !hostForm.email || !hostForm.department || !hostForm.designation || !hostForm.employeeCode" (click)="saveHost()">
+                  <i *ngIf="savingHost" class="ri-loader-4-line ri-spin"></i>
+                  <span>{{ isEditingHost ? 'Update Host Details' : 'Create Enterprise Host' }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hosts Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Host Details</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Location / Cabin</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let h of allHosts">
+                  <td><span class="code-chip">{{ h.employeeCode }}</span></td>
+                  <td>
+                    <div class="user-cell">
+                      <strong>{{ h.name }}</strong>
+                      <small>{{ h.email }} {{ h.phone ? '• ' + h.phone : '' }}</small>
+                    </div>
+                  </td>
+                  <td>{{ h.department }}</td>
+                  <td>{{ h.designation }}</td>
+                  <td>{{ h.cabinNumber || 'Main Block' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="h.available ? 'badge-approved' : 'badge-rejected'">
+                      {{ h.available ? 'Available' : 'Unavailable' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn btn-secondary btn-xs" (click)="openEditHostModal(h)">
+                        <i class="ri-edit-line"></i> Edit
+                      </button>
+                      <button class="btn btn-danger btn-xs" (click)="confirmDeleteHost(h)">
+                        <i class="ri-delete-bin-line"></i> Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="allHosts.length === 0">
+                  <td colspan="7" class="text-center py-4 text-muted">
+                    No enterprise hosts configured. Click "Add New Host" above.
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -834,13 +975,93 @@ declare var Html5Qrcode: any;
       display: flex;
       gap: 6px;
     }
+    .header-action-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .host-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(29, 38, 25, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .host-modal-card {
+      background: var(--bg-surface);
+      max-width: 620px;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--border-subtle);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-head h3 {
+      font-size: 19px;
+      margin: 0;
+      color: var(--olive-900);
+    }
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+    .btn-close:hover {
+      color: var(--danger);
+      background: var(--danger-light);
+    }
+    .form-grid-modal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-grid-modal .full-width {
+      grid-column: span 2;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+    }
     @media (max-width: 850px) {
       .scanner-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .form-grid-modal { grid-template-columns: 1fr; }
+      .form-grid-modal .full-width { grid-column: span 1; }
     }
   `]
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  activeTab: 'scanner' | 'history' | 'passes' | 'audit' = 'scanner';
+  activeTab: 'scanner' | 'history' | 'passes' | 'audit' | 'hosts' = 'scanner';
   stats: DashboardStats | null = null;
   manualCodeInput = '';
   isScanning = false;
@@ -851,6 +1072,25 @@ export class AdminComponent implements OnInit, OnDestroy {
   checkInHistory: CheckInRecord[] = [];
   allPasses: VisitorPassDto[] = [];
   auditLogs: AuditLog[] = [];
+  allHosts: HostDto[] = [];
+
+  showHostModal = false;
+  isEditingHost = false;
+  editingHostId: number | null = null;
+  savingHost = false;
+  hostMessage = '';
+  hostIsError = false;
+  hostForm: HostRequest = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    department: '',
+    designation: '',
+    employeeCode: '',
+    cabinNumber: '',
+    available: true
+  };
 
   constructor(
     public authService: AuthService,
@@ -1046,5 +1286,122 @@ export class AdminComponent implements OnInit, OnDestroy {
       case 'REJECTED': return 'badge-rejected';
       default: return 'badge-pending';
     }
+  }
+
+  // ==============================================================
+  // HOST MANAGEMENT METHODS
+  // ==============================================================
+
+  loadHosts() {
+    this.adminService.getAllHosts().subscribe({
+      next: res => {
+        if (res.success) {
+          this.allHosts = res.data;
+        }
+      },
+      error: err => {
+        this.hostMessage = err.error?.message || 'Failed to load enterprise hosts';
+        this.hostIsError = true;
+      }
+    });
+  }
+
+  openAddHostModal() {
+    this.isEditingHost = false;
+    this.editingHostId = null;
+    this.hostMessage = '';
+    this.hostForm = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      department: '',
+      designation: '',
+      employeeCode: 'EMP-' + Math.floor(100 + Math.random() * 900),
+      cabinNumber: '',
+      available: true
+    };
+    this.showHostModal = true;
+  }
+
+  openEditHostModal(host: HostDto) {
+    this.isEditingHost = true;
+    this.editingHostId = host.id;
+    this.hostMessage = '';
+    let fn = host.firstName || '';
+    let ln = host.lastName || '';
+    if (!fn && host.name) {
+      const parts = host.name.split(' ');
+      fn = parts[0];
+      ln = parts.slice(1).join(' ');
+    }
+    this.hostForm = {
+      firstName: fn,
+      lastName: ln,
+      email: host.email,
+      phone: host.phone || '',
+      department: host.department,
+      designation: host.designation,
+      employeeCode: host.employeeCode,
+      cabinNumber: host.cabinNumber || '',
+      available: host.available !== false
+    };
+    this.showHostModal = true;
+  }
+
+  saveHost() {
+    this.savingHost = true;
+    this.hostMessage = '';
+    if (this.isEditingHost && this.editingHostId) {
+      this.adminService.updateHost(this.editingHostId, this.hostForm).subscribe({
+        next: () => {
+          this.savingHost = false;
+          this.showHostModal = false;
+          this.hostMessage = 'Enterprise host updated successfully!';
+          this.hostIsError = false;
+          this.loadHosts();
+        },
+        error: err => {
+          this.savingHost = false;
+          this.hostMessage = err.error?.message || 'Failed to update enterprise host';
+          this.hostIsError = true;
+        }
+      });
+    } else {
+      this.adminService.createHost(this.hostForm).subscribe({
+        next: () => {
+          this.savingHost = false;
+          this.showHostModal = false;
+          this.hostMessage = 'New enterprise host created successfully!';
+          this.hostIsError = false;
+          this.loadHosts();
+        },
+        error: err => {
+          this.savingHost = false;
+          this.hostMessage = err.error?.message || 'Failed to create enterprise host';
+          this.hostIsError = true;
+        }
+      });
+    }
+  }
+
+  confirmDeleteHost(host: HostDto) {
+    if (confirm(`Are you sure you want to delete host "${host.name}" (${host.employeeCode})?`)) {
+      this.adminService.deleteHost(host.id).subscribe({
+        next: () => {
+          this.hostMessage = `Host ${host.name} deleted successfully!`;
+          this.hostIsError = false;
+          this.loadHosts();
+        },
+        error: err => {
+          this.hostMessage = err.error?.message || 'Failed to delete enterprise host';
+          this.hostIsError = true;
+        }
+      });
+    }
+  }
+
+  cancelHostModal() {
+    this.showHostModal = false;
   }
 }

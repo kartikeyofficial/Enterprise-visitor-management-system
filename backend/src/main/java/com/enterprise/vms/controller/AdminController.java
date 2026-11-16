@@ -7,6 +7,7 @@ import com.enterprise.vms.model.VisitorPass;
 import com.enterprise.vms.repository.VisitorPassRepository;
 import com.enterprise.vms.service.AnalyticsService;
 import com.enterprise.vms.service.AuditLogService;
+import com.enterprise.vms.service.HostManagementService;
 import com.enterprise.vms.service.ScanService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,18 @@ public class AdminController {
     private final AnalyticsService analyticsService;
     private final AuditLogService auditLogService;
     private final VisitorPassRepository passRepository;
+    private final HostManagementService hostManagementService;
 
     public AdminController(ScanService scanService,
                            AnalyticsService analyticsService,
                            AuditLogService auditLogService,
-                           VisitorPassRepository passRepository) {
+                           VisitorPassRepository passRepository,
+                           HostManagementService hostManagementService) {
         this.scanService = scanService;
         this.analyticsService = analyticsService;
         this.auditLogService = auditLogService;
         this.passRepository = passRepository;
+        this.hostManagementService = hostManagementService;
     }
 
     @PostMapping("/scan")
@@ -83,5 +87,48 @@ public class AdminController {
         VisitorPass saved = passRepository.save(pass);
 
         return ResponseEntity.ok(ApiResponse.ok("Pass status updated to " + request.getStatus(), VisitorPassDto.fromEntity(saved)));
+    }
+
+    // ==============================================================
+    // HOST MANAGEMENT ENDPOINTS (CRUD)
+    // ==============================================================
+
+    @GetMapping("/hosts")
+    public ResponseEntity<ApiResponse<List<HostDto>>> getAllHosts() {
+        List<HostDto> hosts = hostManagementService.getAllHosts();
+        return ResponseEntity.ok(ApiResponse.ok("Enterprise hosts list", hosts));
+    }
+
+    @GetMapping("/hosts/{id}")
+    public ResponseEntity<ApiResponse<HostDto>> getHostById(@PathVariable Long id) {
+        HostDto host = hostManagementService.getHostById(id);
+        return ResponseEntity.ok(ApiResponse.ok("Enterprise host details", host));
+    }
+
+    @PostMapping("/hosts")
+    public ResponseEntity<ApiResponse<HostDto>> createHost(@Valid @RequestBody HostRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminEmail = (auth != null) ? auth.getName() : "rajputkartikey10@gmail.com";
+
+        HostDto created = hostManagementService.createHost(request, adminEmail);
+        return ResponseEntity.ok(ApiResponse.ok("Enterprise host created successfully", created));
+    }
+
+    @PutMapping("/hosts/{id}")
+    public ResponseEntity<ApiResponse<HostDto>> updateHost(@PathVariable Long id, @Valid @RequestBody HostRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminEmail = (auth != null) ? auth.getName() : "rajputkartikey10@gmail.com";
+
+        HostDto updated = hostManagementService.updateHost(id, request, adminEmail);
+        return ResponseEntity.ok(ApiResponse.ok("Enterprise host updated successfully", updated));
+    }
+
+    @DeleteMapping("/hosts/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteHost(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminEmail = (auth != null) ? auth.getName() : "rajputkartikey10@gmail.com";
+
+        hostManagementService.deleteHost(id, adminEmail);
+        return ResponseEntity.ok(ApiResponse.ok("Enterprise host deleted successfully", "Host ID " + id + " deleted"));
     }
 }

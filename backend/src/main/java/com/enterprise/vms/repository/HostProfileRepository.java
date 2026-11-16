@@ -12,4 +12,7 @@ public interface HostProfileRepository extends JpaRepository<HostProfile, Long> 
     Optional<HostProfile> findByUserId(Long userId);
     Optional<HostProfile> findByEmployeeCode(String employeeCode);
     List<HostProfile> findByIsAvailableTrue();
+    List<HostProfile> findAllByOrderByIdAsc();
+    boolean existsByEmployeeCode(String employeeCode);
+    boolean existsByEmployeeCodeAndIdNot(String employeeCode, Long id);
 }

@@ -38,11 +38,27 @@ export interface HostDto {
   id: number;
   userId: number;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
+  phone?: string;
   department: string;
   designation: string;
   employeeCode: string;
   cabinNumber?: string;
+  available?: boolean;
+}
+
+export interface HostRequest {
+  firstName: string;
+  lastName?: string;
+  email: string;
+  phone?: string;
+  department: string;
+  designation: string;
+  employeeCode: string;
+  cabinNumber?: string;
+  available?: boolean;
 }
 
 export interface VisitorPassDto {

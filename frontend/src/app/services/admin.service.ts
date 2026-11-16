@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, AuditLog, CheckInRecord, DashboardStats, ScanResultResponse, VisitorPassDto } from '../models/models';
+import { ApiResponse, AuditLog, CheckInRecord, DashboardStats, HostDto, HostRequest, ScanResultResponse, VisitorPassDto } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -54,5 +54,25 @@ export class AdminService {
       status,
       remarks
     });
+  }
+
+  // ==============================================================
+  // ENTERPRISE HOST MANAGEMENT (CRUD)
+  // ==============================================================
+
+  getAllHosts(): Observable<ApiResponse<HostDto[]>> {
+    return this.http.get<ApiResponse<HostDto[]>>(`${this.adminApiUrl}/hosts`);
+  }
+
+  createHost(data: HostRequest): Observable<ApiResponse<HostDto>> {
+    return this.http.post<ApiResponse<HostDto>>(`${this.adminApiUrl}/hosts`, data);
+  }
+
+  updateHost(id: number, data: HostRequest): Observable<ApiResponse<HostDto>> {
+    return this.http.put<ApiResponse<HostDto>>(`${this.adminApiUrl}/hosts/${id}`, data);
+  }
+
+  deleteHost(id: number): Observable<ApiResponse<string>> {
+    return this.http.delete<ApiResponse<string>>(`${this.adminApiUrl}/hosts/${id}`);
   }
 }

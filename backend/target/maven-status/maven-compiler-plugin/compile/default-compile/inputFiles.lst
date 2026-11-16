@@ -16,6 +16,7 @@
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/DigiLockerInitiateRequest.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/DigiLockerVerifyRequest.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/HostDto.java
+/home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/HostRequest.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/LoginRequest.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/RegisterEmailRequest.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/dto/ScanQrRequest.java
@@ -47,5 +48,6 @@
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/AuthService.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/DigiLockerService.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/EmailService.java
+/home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/HostManagementService.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/QrCodeService.java
 /home/kartikey/projects/Enterprise-visiter-management-system/backend/src/main/java/com/enterprise/vms/service/ScanService.java

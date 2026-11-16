@@ -15,6 +15,8 @@ public interface CheckInRecordRepository extends JpaRepository<CheckInRecord, Lo
     Optional<CheckInRecord> findTopByPassIdOrderByCheckInTimeDesc(Long passId);
     List<CheckInRecord> findByCheckOutTimeIsNull();
     List<CheckInRecord> findAllByOrderByCheckInTimeDesc();
+    List<CheckInRecord> findByPassId(Long passId);
+    void deleteByPassId(Long passId);
 
     @Query("SELECT COUNT(c) FROM CheckInRecord c WHERE c.checkInTime >= :startOfDay AND c.checkInTime < :endOfDay")
     long countCheckInsBetween(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);

@@ -5,6 +5,7 @@ com/enterprise/vms/dto/VisitorPassDto.class
 com/enterprise/vms/model/DigiLockerVerification.class
 com/enterprise/vms/repository/CheckInRecordRepository.class
 com/enterprise/vms/dto/ScanQrRequest.class
+com/enterprise/vms/service/HostManagementService.class
 com/enterprise/vms/config/JacksonConfig.class
 com/enterprise/vms/controller/AuthController.class
 com/enterprise/vms/config/DataSourceConfig.class
@@ -19,6 +20,7 @@ com/enterprise/vms/controller/AdminController.class
 com/enterprise/vms/dto/DigiLockerVerifyRequest.class
 com/enterprise/vms/config/DataInitializer.class
 com/enterprise/vms/service/QrCodeService.class
+com/enterprise/vms/dto/HostRequest.class
 com/enterprise/vms/model/CheckInRecord.class
 com/enterprise/vms/model/User.class
 com/enterprise/vms/service/ScanService.class
